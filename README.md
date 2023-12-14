@@ -20,3 +20,8 @@ Gefundene Artikel werden extrahiert und als DOCX-Dateien im entsprechenden Verze
 # Anmerkungen
 Der Crawler berücksichtigt das angegebene Jahr und extrahiert nur Artikel, die im angegebenen Zeitraum veröffentlicht wurden.
 Wenn kein Artikeltext vorhanden ist, wird eine entsprechende Meldung ausgegeben.
+
+# gitignore
+*.txt
+*.zip
+*.docx
