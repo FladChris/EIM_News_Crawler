@@ -1,3 +1,6 @@
+"""
+https://github.com/FladChris/EIM_News_Crawler.git
+"""
 import os
 import requests
 from bs4 import BeautifulSoup
