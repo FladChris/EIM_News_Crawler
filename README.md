@@ -30,7 +30,10 @@ Gefundene Artikel werden extrahiert und im entsprechenden Verzeichnis gespeicher
 Der Crawler berücksichtigt das angegebene Jahr und extrahiert nur Artikel, die im angegebenen Zeitraum veröffentlicht wurden.
 Wenn kein Artikeltext vorhanden ist, wird eine entsprechende Meldung ausgegeben.
 
+## Wichtig
+Unter umständen kommt es zu einem Timeout, wenn man sich ausserhalb des Universitätsnetzwerkes befindet. In diesem Fall hilft es einfach, sich in das Netzwerk per VPN einzuwählen und das Skript erneut auszuführen.
+
+
 # gitignore
-*.txt  
 *.zip  
 *.docx
