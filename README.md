@@ -15,6 +15,12 @@ docx: Zur Erstellung und Bearbeitung von DOCX-Dateien.
 codecs: für die Codierung und Decodierung von Zeichenfolgen
 
 # Verwendung
+## Abhängikeiten installieren
+Per Commandozeile in das Verzeichnis wechseln, in dem das requirements.txt gespeichert ist und mit dem Befehl `pip install -r requirements.txt` ausführen.
+
+Gewisse Abhängigkeiten sind nur in einem der beiden Skripte enthalten. Ebenfalls werden nicht alle Installiert, da z.B. codecs bereits in Python enthalten sind.
+
+## News herunterladen
 Das Skript startet und fragt den Benutzer nach dem gewünschten Jahr für die News-Berichte.
 Es erstellt ein Verzeichnis für das angegebene Jahr, falls es nicht existiert.
 Der Crawler durchsucht die News-Seite der Fakultät für das angegebene Jahr.
