@@ -1,30 +1,70 @@
 """
 Autor: Christian Fladung
-last build: 20.03.2024
+last build: 14.12.2023
 Description: Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für 
 Elektrotechnik, Informatik und Mathematik der Universität Paderborn) zu extrahieren und als DOCX-Dateien zu speichern.
 Git: https://github.com/FladChris/EIM_News_Crawler.git
 """
 import os
 import requests
+import docx
 from bs4 import BeautifulSoup
 from datetime import datetime
 from htmldocx import HtmlToDocx
 from docx import Document
+from docx.enum.dml import MSO_THEME_COLOR_INDEX
+
+
+def add_hyperlink(paragraph, text, url):
+    # This gets access to the document.xml.rels file and gets a new relation id value
+    part = paragraph.part
+    r_id = part.relate_to(url, docx.opc.constants.RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+
+    # Create the w:hyperlink tag and add needed values
+    hyperlink = docx.oxml.shared.OxmlElement('w:hyperlink')
+    hyperlink.set(docx.oxml.shared.qn('r:id'), r_id, )
+
+    # Create a w:r element and a new w:rPr element
+    new_run = docx.oxml.shared.OxmlElement('w:r')
+    rPr = docx.oxml.shared.OxmlElement('w:rPr')
+
+    # Join all the xml elements together add add the required text to the w:r element
+    new_run.append(rPr)
+    new_run.text = text
+    hyperlink.append(new_run)
+
+    # Create a new Run object and add the hyperlink into it
+    r = paragraph.add_run ()
+    r._r.append (hyperlink)
+
+    # A workaround for the lack of a hyperlink style (doesn't go purple after using the link)
+    # Delete this if using a template that has the hyperlink style in it
+    r.font.color.theme_color = MSO_THEME_COLOR_INDEX.HYPERLINK
+    r.font.underline = True
+
+    return hyperlink
 
 def file_for_year(news_year):
     if not os.path.exists(news_year):
         os.mkdir(news_year)
 
-def save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl):
+def save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls):
     article_clear = HtmlToDocx()
     doc = Document()
     doc.add_heading(news_headline, level=2)  #level gibt die Überschriftsgröße bzw. Art an
     for garbage in news_article:
         garbage = str(garbage).replace('\xad', '').replace('|', '')
         article_clear.add_html_to_document(garbage, doc)
-        print(clearurl)
-        doc.add_paragraph(str(clearurl))
+        paragraph_url_article = doc.add_paragraph("URL des Artikels: ")
+        add_hyperlink(paragraph_url_article, clearurl, clearurl)
+        print(image_urls)
+        if not image_urls:
+            doc.add_paragraph("Kein Bild vorhanden")
+        else:
+            for url in image_urls:
+                paragraph_picture = doc.add_paragraph("Url des Bildes: ")
+                add_hyperlink(paragraph_picture, url, url)
+        
     doc.save(f'{news_year}/{act_date}{url_news_output}.docx')
 
 def main():
@@ -62,8 +102,23 @@ def main():
                         response.content, 'html.parser')
                     news_article = news_result.find_all(
                         'div', class_='news-detail_content')
+                    try:
+                        media_sections = news_result.find_all('div', class_="mediaelement mediaelement-image")
+                        image_urls = []
+                        for media_section in media_sections:
+                            if media_section is not None:       
+                                image_tags = media_section.find_all('img')
+                                for image_tag in image_tags:
+                                    if image_tag is not None:
+                                        image_urls.append("https://www.eim.uni-paderborn.de"+image_tag.get('src'))
+                                        print(image_tag)
+                                print(image_urls)
+                        else:   
+                            print("nichts gefunden")                      
+                    except AttributeError:
+                        print("Keine Kontaktbox vorhanden")
                     if news_article is not None:
-                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl)
+                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls)
                     else:
                         print('Kein Artikeltext vorhanden')
 
