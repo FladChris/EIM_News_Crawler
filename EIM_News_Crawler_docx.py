@@ -48,7 +48,7 @@ def file_for_year(news_year):
     if not os.path.exists(news_year):
         os.mkdir(news_year)
 
-def save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_url, link_url, link_text):
+def save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls):
     article_clear = HtmlToDocx()
     doc = Document()
     doc.add_heading(news_headline, level=2)  #level gibt die Überschriftsgröße bzw. Art an
@@ -57,7 +57,13 @@ def save_document(news_year, act_date, url_news_output, news_article, news_headl
         article_clear.add_html_to_document(garbage, doc)
         paragraph_url_article = doc.add_paragraph("URL des Artikels: ")
         add_hyperlink(paragraph_url_article, clearurl, clearurl)
-        paragraph_picture = doc.add_paragraph("Url der/des Bilder/Bildes: ")
+        print(image_urls)
+        if not image_urls:
+            doc.add_paragraph("Kein Bild vorhanden")
+        else:
+            for url in image_urls:
+                paragraph_picture = doc.add_paragraph("Url des Bildes: ")
+                add_hyperlink(paragraph_picture, url, url)
         
     doc.save(f'{news_year}/{act_date}{url_news_output}.docx')
 
@@ -97,27 +103,22 @@ def main():
                     news_article = news_result.find_all(
                         'div', class_='news-detail_content')
                     try:
-                        contact_section = news_result.find('section', class_="wp-contact-person")
-                        if contact_section is not None:
-                            image_tag = contact_section.find('img')
-                            if image_tag is not None:
-                                image_url = image_tag.get('src')
-                                # print("Bild-URL: ", image_url)
-                            link_tag = contact_section.find('a')
-                            if link_tag is not None:
-                                link_url = link_tag.get('href')
-                                link_text = link_tag.text
-                                # print("Link-URL: ", link_url)
-                                # print("Link-Text: ", link_text)
-                        else:
-                            image_url = ""
-                            link_url = ""
-                            link_text = ""
-                            
+                        media_sections = news_result.find_all('div', class_="mediaelement mediaelement-image")
+                        image_urls = []
+                        for media_section in media_sections:
+                            if media_section is not None:       
+                                image_tags = media_section.find_all('img')
+                                for image_tag in image_tags:
+                                    if image_tag is not None:
+                                        image_urls.append("https://www.eim.uni-paderborn.de"+image_tag.get('src'))
+                                        print(image_tag)
+                                print(image_urls)
+                        else:   
+                            print("nichts gefunden")                      
                     except AttributeError:
                         print("Keine Kontaktbox vorhanden")
                     if news_article is not None:
-                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_url, link_url, link_text)
+                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls)
                     else:
                         print('Kein Artikeltext vorhanden')
 
