@@ -48,7 +48,7 @@ def file_for_year(news_year):
     if not os.path.exists(news_year):
         os.mkdir(news_year)
 
-def save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls):
+def save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls, contact_cards):
     article_clear = HtmlToDocx()
     doc = Document()
     doc.add_heading(news_headline, level=2)  #level gibt die Überschriftsgröße bzw. Art an
@@ -57,14 +57,22 @@ def save_document(news_year, act_date, url_news_output, news_article, news_headl
         article_clear.add_html_to_document(garbage, doc)
         paragraph_url_article = doc.add_paragraph("URL des Artikels: ")
         add_hyperlink(paragraph_url_article, clearurl, clearurl)
-        print(image_urls)
         if not image_urls:
             doc.add_paragraph("Kein Bild vorhanden")
         else:
             for url in image_urls:
                 paragraph_picture = doc.add_paragraph("Url des Bildes: ")
                 add_hyperlink(paragraph_picture, url, url)
-        
+        if not contact_cards:
+            doc.add_paragraph("Kein Kontakt vorhanden")
+        else:
+            for key, card in contact_cards.items():
+                doc.add_paragraph(f"Kontakt {key}:")
+                paragraph_contact_img = doc.add_paragraph("Bild-URL: ")
+                add_hyperlink(paragraph_contact_img, card['image_url'], card['image_url'])
+                doc.add_paragraph(f"Name des Kontakts: {card['link_text']}")
+                paragraph_contact_link = doc.add_paragraph("PM-Url: ")
+                add_hyperlink(paragraph_contact_link, card['link_url'], card['link_url'])
     doc.save(f'{news_year}/{act_date}{url_news_output}.docx')
 
 def main():
@@ -111,14 +119,41 @@ def main():
                                 for image_tag in image_tags:
                                     if image_tag is not None:
                                         image_urls.append("https://www.eim.uni-paderborn.de"+image_tag.get('src'))
-                                        print(image_tag)
-                                print(image_urls)
                         else:   
-                            print("nichts gefunden")                      
+                            pass                      
                     except AttributeError:
+                        print("Kein Bild vorhanden")
+                    try:
+                        business_card_sections = news_result.find_all('div', class_="business-card teaser last")
+                        contact_image_urls = []
+                        contact_link_texts = []
+                        contact_link_urls = []
+                        contact_cards = {}
+                        for business_card_section in business_card_sections:
+                            if business_card_section is not None:
+                                image_tags = business_card_section.find_all('img')
+                                for image_tag in image_tags:
+                                    if image_tag is not None:
+                                        contact_image_urls.append("https://www.eim.uni-paderborn.de"+image_tag.get('src'))
+                                link_tags = business_card_section.find_all('a')
+                                for link_tag in link_tags:
+                                    if link_tag is not None:
+                                        contact_link_texts.append(link_tag.text)
+                                        contact_link_urls.append(link_tag.get('href'))
+                                for i in range(len(contact_image_urls)):
+                                    card = {
+                                        'image_url': contact_image_urls[i],
+                                        'link_text': contact_link_texts[i],
+                                        'link_url': contact_link_urls[i]
+                                    }
+                                    contact_cards[i] = card
+                        else:
+                            pass
+                    except:
                         print("Keine Kontaktbox vorhanden")
+                    
                     if news_article is not None:
-                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls)
+                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls,contact_cards)
                     else:
                         print('Kein Artikeltext vorhanden')
 
