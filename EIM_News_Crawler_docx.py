@@ -16,13 +16,15 @@ def file_for_year(news_year):
     if not os.path.exists(news_year):
         os.mkdir(news_year)
 
-def save_document(news_year, act_date, url_news_output, news_article, news_headline):
+def save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl):
     article_clear = HtmlToDocx()
     doc = Document()
     doc.add_heading(news_headline, level=2)  #level gibt die Überschriftsgröße bzw. Art an
     for garbage in news_article:
         garbage = str(garbage).replace('\xad', '').replace('|', '')
         article_clear.add_html_to_document(garbage, doc)
+        print(clearurl)
+        doc.add_paragraph(str(clearurl))
     doc.save(f'{news_year}/{act_date}{url_news_output}.docx')
 
 def main():
@@ -55,12 +57,13 @@ def main():
                         '/', '_').replace('-single', '')
                     response = requests.get(
                         'https://www.eim.uni-paderborn.de' + url_news)
+                    clearurl = 'https://www.eim.uni-paderborn.de' + url_news
                     news_result = BeautifulSoup(
                         response.content, 'html.parser')
                     news_article = news_result.find_all(
                         'div', class_='news-detail_content')
                     if news_article is not None:
-                        save_document(news_year, act_date, url_news_output, news_article, news_headline)
+                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl)
                     else:
                         print('Kein Artikeltext vorhanden')
 
