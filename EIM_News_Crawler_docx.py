@@ -1,6 +1,6 @@
 """
 Autor: Christian Fladung
-last build: 14.12.2023
+last build: 20.03.2024
 Description: Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für 
 Elektrotechnik, Informatik und Mathematik der Universität Paderborn) zu extrahieren und als DOCX-Dateien zu speichern.
 Git: https://github.com/FladChris/EIM_News_Crawler.git
