@@ -57,9 +57,8 @@ def save_document(news_year, act_date, url_news_output, news_article, news_headl
         article_clear.add_html_to_document(garbage, doc)
         paragraph_url_article = doc.add_paragraph("URL des Artikels: ")
         add_hyperlink(paragraph_url_article, clearurl, clearurl)
-        doc.add_paragraph("Bild-URL: " + str(image_url))
-        #paragraph = doc.add_paragraph("Link-Text: ")
-        #add_hyperlink(paragraph, link_text, link_url)
+        paragraph_picture = doc.add_paragraph("Url der/des Bilder/Bildes: ")
+        
     doc.save(f'{news_year}/{act_date}{url_news_output}.docx')
 
 def main():
