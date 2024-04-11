@@ -115,10 +115,12 @@ def main():
                         image_urls = []
                         for media_section in media_sections:
                             if media_section is not None:       
-                                image_tags = media_section.find_all('img')
-                                for image_tag in image_tags:
-                                    if image_tag is not None:
-                                        image_urls.append("https://www.eim.uni-paderborn.de"+image_tag.get('src'))
+                                href_tags = media_section.find_all('a')
+                                for href_tag in href_tags:
+                                    if href_tag is not None:
+                                        print(href_tag['href'])
+                                        image_urls.append(
+                                            "https://www.eim.uni-paderborn.de/" + href_tag['href'])
                         else:   
                             pass                      
                     except AttributeError:
@@ -153,7 +155,8 @@ def main():
                         print("Keine Kontaktbox vorhanden")
                     
                     if news_article is not None:
-                        save_document(news_year, act_date, url_news_output, news_article, news_headline, clearurl, image_urls,contact_cards)
+                        save_document(news_year, act_date, url_news_output, news_article,
+                                      news_headline, clearurl, image_urls, contact_cards)
                     else:
                         print('Kein Artikeltext vorhanden')
 
