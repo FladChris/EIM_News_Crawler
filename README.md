@@ -1,6 +1,12 @@
 # EIM_News_Crawler
 Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für Elektrotechnik, Informatik und Mathematik der Universität Paderborn zu extrahieren und jede News einzeln als DOCX-Dateien zu speichern.
 
+### Release
+https://github.com/FladChris/EIM_News_Crawler/releases/tag/Newscrawler_1.01
+
+### Source
+https://github.com/FladChris/EIM_News_Crawler
+
 ## Abhängigkeiten
 Das Skript verwendet die folgenden Python-Bibliotheken:  
 os: Zur Verwaltung von Dateien und Verzeichnissen.  
