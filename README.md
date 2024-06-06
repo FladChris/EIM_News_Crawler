@@ -1,24 +1,17 @@
 # EIM_News_Crawler
-Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für Elektrotechnik, Informatik und Mathematik der Universität Paderborn) zu extrahieren und je nach Skript als DOCX-Dateien oder *.txt-Datei zu speichern.
+Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für Elektrotechnik, Informatik und Mathematik der Universität Paderborn zu extrahieren und jede News einzeln als DOCX-Dateien zu speichern.
 
 ## Abhängigkeiten
-### in allen Skripten enthalten
 Das Skript verwendet die folgenden Python-Bibliotheken:  
 os: Zur Verwaltung von Dateien und Verzeichnissen.  
 requests: Zum Senden von HTTP-Anfragen und Empfangen von HTTP-Antworten.  
 BeautifulSoup: Zur Extraktion von Daten aus HTML- oder XML-Dokumenten.  
-datetime: Zur Arbeit mit Datums- und Zeitinformationen.  
-## im Docx Skript enthalten
 htmldocx: Zum Konvertieren von HTML zu DOCX.  
 docx: Zur Erstellung und Bearbeitung von DOCX-Dateien.  
-## im *.txt Skript enthalten
-codecs: für die Codierung und Decodierung von Zeichenfolgen
 
 ## Verwendung
 ### Abhängikeiten installieren
 Per Commandozeile in das Verzeichnis wechseln, in dem das requirements.txt gespeichert ist und mit dem Befehl `pip install -r requirements.txt` ausführen.
-
-Gewisse Abhängigkeiten sind nur in einem der beiden Skripte enthalten. Ebenfalls werden nicht alle Installiert, da z.B. codecs bereits in Python enthalten sind.
 
 ### News herunterladen
 Das Skript startet und fragt den Benutzer nach dem gewünschten Jahr für die News-Berichte.
