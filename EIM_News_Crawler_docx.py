@@ -10,7 +10,7 @@ from docx.enum.dml import MSO_THEME_COLOR_INDEX
 
 """
 Autor: Christian Fladung
-letzter Build: 11.04.2024
+last Build: 11.04.2024
 Beschreibung: Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für 
 Elektrotechnik, Informatik und Mathematik der Universität Paderborn) zu extrahieren und als DOCX-Dateien zu speichern.
 Git: https://github.com/FladChris/EIM_News_Crawler.git
