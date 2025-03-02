@@ -1,38 +1,77 @@
 # EIM_News_Crawler
-Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für Elektrotechnik, Informatik und Mathematik der Universität Paderborn zu extrahieren und jede News einzeln als DOCX-Dateien zu speichern.
 
-### Release
-https://github.com/FladChris/EIM_News_Crawler/releases/tag/Newscrawler_1.01
+Ein Webcrawler, der Nachrichtenartikel von der Website der Fakultät für Elektrotechnik, Informatik und Mathematik der Universität Paderborn extrahiert und jeden Artikel als separate DOCX-Datei speichert.
 
-### Source
-https://github.com/FladChris/EIM_News_Crawler
+[![Release](https://img.shields.io/github/v/release/FladChris/EIM_News_Crawler)](https://github.com/FladChris/EIM_News_Crawler/releases)  
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Abhängigkeiten
-Das Skript verwendet die folgenden Python-Bibliotheken:  
-os: Zur Verwaltung von Dateien und Verzeichnissen.  
-requests: Zum Senden von HTTP-Anfragen und Empfangen von HTTP-Antworten.  
-BeautifulSoup: Zur Extraktion von Daten aus HTML- oder XML-Dokumenten.  
-htmldocx: Zum Konvertieren von HTML zu DOCX.  
-docx: Zur Erstellung und Bearbeitung von DOCX-Dateien.  
+## Inhaltsverzeichnis
+
+- [Überblick](#überblick)
+- [Features](#features)
+- [Installation](#installation)
+- [Verwendung](#verwendung)
+- [Abhängigkeiten](#abhängigkeiten)
+- [Bekannte Probleme und Hinweise](#bekannte-probleme-und-hinweise)
+- [Lizenz](#lizenz)
+
+## Überblick
+
+Der **EIM_News_Crawler** wurde entwickelt, um automatisiert Nachrichtenartikel von der Webseite der Fakultät zu extrahieren und sie in einem strukturierten Format (DOCX) zu speichern. Der Crawler filtert dabei Artikel basierend auf einem benutzerdefinierten Jahr und speichert jeden Artikel in einem entsprechenden Jahresverzeichnis.
+
+## Features
+
+- **Automatische Extraktion:** Sucht und extrahiert Artikel, die innerhalb eines vom Benutzer definierten Jahres veröffentlicht wurden.
+- **Dokumentenerstellung:** Speichert jeden gefundenen Artikel als DOCX-Datei.
+- **Medien und Kontakte:** Unterstützt das Einbinden von Bild-URLs und Kontaktinformationen in die Dokumente.
+- **Benutzerfreundlich:** Einfaches Interface über die Kommandozeile, das nach dem gewünschten Jahr fragt.
+
+## Installation
+
+1. **Repository klonen:**  
+   ```bash
+   git clone https://github.com/FladChris/EIM_News_Crawler.git
+   cd EIM_News_Crawler
+   ```
+
+2. **Abhängigkeiten installieren:**  
+   Stelle sicher, dass Python (Version 3.6 oder höher) installiert ist. Installiere dann die benötigten Pakete über:
+   ```bash
+   pip install -r requirements.txt
+   ```  
 
 ## Verwendung
-### Abhängikeiten installieren
-Per Commandozeile in das Verzeichnis wechseln, in dem das requirements.txt gespeichert ist und mit dem Befehl `pip install -r requirements.txt` ausführen.
 
-### News herunterladen
-Das Skript startet und fragt den Benutzer nach dem gewünschten Jahr für die News-Berichte.
-Es erstellt ein Verzeichnis für das angegebene Jahr, falls es nicht existiert.
-Der Crawler durchsucht die News-Seite der Fakultät für das angegebene Jahr.
-Gefundene Artikel werden extrahiert und im entsprechenden Verzeichnis gespeichert.
+1. **Skript starten:**  
+   Führe das Skript über die Kommandozeile aus:
+   ```bash
+   python EIM_News_Crawler_docx.py
+   ```
 
-## Anmerkungen
-Der Crawler berücksichtigt das angegebene Jahr und extrahiert nur Artikel, die im angegebenen Zeitraum veröffentlicht wurden.
-Wenn kein Artikeltext vorhanden ist, wird eine entsprechende Meldung ausgegeben.
+2. **Jahr eingeben:**  
+   Das Programm fordert dich auf, das Jahr der gewünschten Artikel einzugeben. Es wird ein Verzeichnis für dieses Jahr erstellt, falls nicht bereits vorhanden.
 
-### Wichtig
-Unter umständen kommt es zu einem Timeout, wenn man sich ausserhalb des Universitätsnetzwerkes befindet. In diesem Fall hilft es einfach, sich in das Netzwerk per VPN einzuwählen und das Skript erneut auszuführen.
+3. **Artikel-Crawling:**  
+   Der Crawler durchsucht die News-Seite und extrahiert Artikel, die in das eingegebene Jahr fallen. Jeder gefundene Artikel wird mit Datum, Überschrift, Inhalt, Bild-URLs und Kontaktinformationen in eine separate DOCX-Datei gespeichert.
 
+## Abhängigkeiten
 
-### gitignore
-*.zip  
-*.docx
+Das Skript verwendet folgende Python-Bibliotheken:
+- **os:** Verwaltung von Dateien und Verzeichnissen.
+- **requests:** HTTP-Anfragen senden und Antworten empfangen.
+- **BeautifulSoup (beautifulsoup4):** Extraktion von Daten aus HTML/XML-Dokumenten.
+- **htmldocx:** Konvertierung von HTML in DOCX.
+- **python-docx:** Erstellung und Bearbeitung von DOCX-Dateien.
+- **datetime:** Verarbeitung von Datums- und Zeitangaben.
+
+## Bekannte Probleme und Hinweise
+
+- **Timeout-Probleme:**  
+  Unter Umständen kann es zu einem Timeout kommen, wenn das Skript außerhalb des Universitätsnetzwerks ausgeführt wird. In diesem Fall wird empfohlen, per VPN auf das Netzwerk zuzugreifen und das Skript erneut zu starten.
+  
+- **Fehlende Inhalte:**  
+  Falls ein Artikel keinen Text, keine Bilder oder keine Kontaktinformationen enthält, wird eine entsprechende Meldung ausgegeben.
+
+## Lizenz
+
+Dieses Projekt ist unter der MIT-Lizenz lizenziert. 
