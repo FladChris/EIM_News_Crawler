@@ -7,24 +7,26 @@ Ein Webcrawler, der Nachrichtenartikel von der Website der Fakultät für Elektr
 
 ## Inhaltsverzeichnis
 
-- [Überblick](#überblick)
-- [Features](#features)
-- [Installation](#installation)
-- [Verwendung](#verwendung)
-- [Abhängigkeiten](#abhängigkeiten)
-- [Bekannte Probleme und Hinweise](#bekannte-probleme-und-hinweise)
-- [Lizenz](#lizenz)
+- [EIM\_News\_Crawler](#eim_news_crawler)
+  - [Inhaltsverzeichnis](#inhaltsverzeichnis)
+  - [Überblick](#überblick)
+  - [Features](#features)
+  - [Installation](#installation)
+  - [Verwendung](#verwendung)
+  - [Abhängigkeiten](#abhängigkeiten)
+  - [Bekannte Probleme und Hinweise](#bekannte-probleme-und-hinweise)
+  - [Lizenz](#lizenz)
 
 ## Überblick
 
-Der **EIM_News_Crawler** wurde entwickelt, um automatisiert Nachrichtenartikel von der Webseite der Fakultät zu extrahieren und sie in einem strukturierten Format (DOCX) zu speichern. Der Crawler filtert dabei Artikel basierend auf einem benutzerdefinierten Jahr und speichert jeden Artikel in einem entsprechenden Jahresverzeichnis.
+Der **EIM_News_Crawler** durchsucht automatisiert die News-Seite der Fakultät und speichert Artikel, die in einem benutzerdefinierten Jahr veröffentlicht wurden, als strukturierte DOCX-Dokumente.
 
 ## Features
 
-- **Automatische Extraktion:** Sucht und extrahiert Artikel, die innerhalb eines vom Benutzer definierten Jahres veröffentlicht wurden.
-- **Dokumentenerstellung:** Speichert jeden gefundenen Artikel als DOCX-Datei.
-- **Medien und Kontakte:** Unterstützt das Einbinden von Bild-URLs und Kontaktinformationen in die Dokumente.
-- **Benutzerfreundlich:** Einfaches Interface über die Kommandozeile, das nach dem gewünschten Jahr fragt.
+- **Jahresfilter:** Extrahiert nur Artikel eines vom Benutzer eingegebenen Jahres.
+- **DOCX-Erstellung:** Konvertierung von HTML-Inhalten in DOCX mit Bildern und Kontaktinfos.
+- **Einfaches CLI-Interface:** Fragt über die Kommandozeile nach dem Zieljahr.
+- **Modularer Code:** Leicht erweiterbare Struktur durch Helper-Funktionen.
 
 ## Installation
 
@@ -34,44 +36,55 @@ Der **EIM_News_Crawler** wurde entwickelt, um automatisiert Nachrichtenartikel v
    cd EIM_News_Crawler
    ```
 
-2. **Abhängigkeiten installieren:**  
-   Stelle sicher, dass Python (Version 3.6 oder höher) installiert ist. Installiere dann die benötigten Pakete über:
+2. **Virtuelle Umgebung (optional):**  
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate  # Linux/macOS
+   venv\Scripts\activate   # Windows
+   ```
+
+3. **Abhängigkeiten installieren:**  
+   Erstelle oder passe die `requirements.txt` an und installiere:
+   ```text
+   requests==2.28.2
+   beautifulsoup4==4.11.1
+   python-docx==0.8.11
+   htmldocx==0.1.7
+   ```
    ```bash
    pip install -r requirements.txt
-   ```  
+   ```
 
 ## Verwendung
 
-1. **Skript starten:**  
-   Führe das Skript über die Kommandozeile aus:
+1. **Skript ausführen:**  
    ```bash
-   python EIM_News_Crawler_docx.py
+   python crawler.py
    ```
+   (Alternativ: `python EIM_News_Crawler_docx.py` je nach Datei­namen im Repo.)
 
 2. **Jahr eingeben:**  
-   Das Programm fordert dich auf, das Jahr der gewünschten Artikel einzugeben. Es wird ein Verzeichnis für dieses Jahr erstellt, falls nicht bereits vorhanden.
+   Folge der Aufforderung und gib das gewünschte Jahr (z. B. `2024`) ein.
 
-3. **Artikel-Crawling:**  
-   Der Crawler durchsucht die News-Seite und extrahiert Artikel, die in das eingegebene Jahr fallen. Jeder gefundene Artikel wird mit Datum, Überschrift, Inhalt, Bild-URLs und Kontaktinformationen in eine separate DOCX-Datei gespeichert.
+3. **Ergebnisse:**  
+   Für das eingegebene Jahr wird ein Verzeichnis angelegt, und alle gefundenen Artikel werden darin als `YYYY-MM-DD_slug.docx` abgespeichert.
 
 ## Abhängigkeiten
 
-Das Skript verwendet folgende Python-Bibliotheken:
-- **os:** Verwaltung von Dateien und Verzeichnissen.
-- **requests:** HTTP-Anfragen senden und Antworten empfangen.
-- **BeautifulSoup (beautifulsoup4):** Extraktion von Daten aus HTML/XML-Dokumenten.
-- **htmldocx:** Konvertierung von HTML in DOCX.
-- **python-docx:** Erstellung und Bearbeitung von DOCX-Dateien.
-- **datetime:** Verarbeitung von Datums- und Zeitangaben.
+Das Skript nutzt folgende externe Bibliotheken:
+
+- `requests` (HTTP-Anfragen)
+- `beautifulsoup4` (HTML-Parsing)
+- `python-docx` (Erstellung von DOCX-Dateien)
+- `htmldocx` (Konvertierung HTML → DOCX)
 
 ## Bekannte Probleme und Hinweise
 
-- **Timeout-Probleme:**  
-  Unter Umständen kann es zu einem Timeout kommen, wenn das Skript außerhalb des Universitätsnetzwerks ausgeführt wird. In diesem Fall wird empfohlen, per VPN auf das Netzwerk zuzugreifen und das Skript erneut zu starten.
-  
+- **Timeout & Netzwerkzugriff:**  
+  Außerhalb des Universitätsnetzwerks kann es zu Timeouts kommen. VPN-Zugriff auf das Uni-Netz kann helfen.
 - **Fehlende Inhalte:**  
-  Falls ein Artikel keinen Text, keine Bilder oder keine Kontaktinformationen enthält, wird eine entsprechende Meldung ausgegeben.
+  Artikel ohne Text, Bilder oder Kontaktinfos werden entsprechend markiert.
 
 ## Lizenz
 
-Dieses Projekt ist unter der MIT-Lizenz lizenziert. 
+Dieses Projekt ist unter der MIT-Lizenz lizenziert.
