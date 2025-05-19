@@ -1,5 +1,4 @@
-requests==2.26.0
-python-docx==0.8.11
-beautifulsoup4==4.10.0
-datetime==4.3
-htmldocx==0.1.0
+requests>=2.28.0
+beautifulsoup4>=4.11.1
+python-docx>=0.8.11
+htmldocx>=0.1.7
