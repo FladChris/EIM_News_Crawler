@@ -59,9 +59,8 @@ Der **EIM_News_Crawler** durchsucht automatisiert die News-Seite der Fakultät u
 
 1. **Skript ausführen:**  
    ```bash
-   python crawler.py
+   python EIM_News_Crawler_docx.py
    ```
-   (Alternativ: `python EIM_News_Crawler_docx.py` je nach Datei­namen im Repo.)
 
 2. **Jahr eingeben:**  
    Folge der Aufforderung und gib das gewünschte Jahr (z. B. `2024`) ein.
