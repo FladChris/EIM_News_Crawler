@@ -1,215 +1,172 @@
-import datetime
 import os
 import requests
-import docx
+from datetime import date, datetime
+from pathlib import Path
 from bs4 import BeautifulSoup
-from datetime import datetime
 from htmldocx import HtmlToDocx
 from docx import Document
 from docx.enum.dml import MSO_THEME_COLOR_INDEX
-
-"""
-Autor: Christian Fladung
-last Build: 11.04.2024
-Description: Webcrawler, der dazu dient, Nachrichtenartikel von der Website der Fakultät für 
-Elektrotechnik, Informatik und Mathematik der Universität Paderborn) zu extrahieren und als DOCX-Dateien zu speichern.
-Git: https://github.com/FladChris/EIM_News_Crawler.git
-"""
+from docx.oxml.shared import qn, OxmlElement
+from docx.opc.constants import RELATIONSHIP_TYPE
 
 
-def add_hyperlink(paragraph, text, url):
+BASE_URL = 'https://www.eim.uni-paderborn.de'
+NEWS_LIST_PATH = '/eim-news-list/seite-{}'
+
+
+def add_hyperlink(paragraph, text: str, url: str):
     """
     Fügt einen Hyperlink in einem Word-Dokument hinzu.
-
-    Parameter:
-    - paragraph (docx.text.paragraph.Paragraph): Der Absatz, zu dem der Hyperlink hinzugefügt werden soll.
-    - text (str): Der Text, der für den Hyperlink angezeigt werden soll.
-    - url (str): Die URL, zu der der Hyperlink navigieren soll.
-
-    Rückgabe:
-    - hyperlink (docx.oxml.shared.OxmlElement): Das erstellte Hyperlink-Element.
     """
-    part = paragraph.part
-    r_id = part.relate_to(
-        url, docx.opc.constants.RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+    r_id = paragraph.part.relate_to(url, RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+    hyperlink = OxmlElement('w:hyperlink')
+    hyperlink.set(qn('r:id'), r_id)
 
-    hyperlink = docx.oxml.shared.OxmlElement('w:hyperlink')
-    hyperlink.set(docx.oxml.shared.qn('r:id'), r_id, )
-
-    new_run = docx.oxml.shared.OxmlElement('w:r')
-    rPr = docx.oxml.shared.OxmlElement('w:rPr')
-
+    new_run = OxmlElement('w:r')
+    rPr = OxmlElement('w:rPr')
     new_run.append(rPr)
     new_run.text = text
     hyperlink.append(new_run)
 
-    r = paragraph.add_run()
-    r._r.append(hyperlink)
-
-    r.font.color.theme_color = MSO_THEME_COLOR_INDEX.HYPERLINK
-    r.font.underline = True
-
+    run = paragraph.add_run()
+    run._r.append(hyperlink)
+    run.font.color.theme_color = MSO_THEME_COLOR_INDEX.HYPERLINK
+    run.font.underline = True
     return hyperlink
 
 
-# Funktion zum Erstellen eines Verzeichnisses für das eingegebene Jahr
-def create_directory_for_year(news_year):
-    if not os.path.exists(news_year):
-        os.mkdir(news_year)
+def ensure_directory(year: str):
+    Path(year).mkdir(exist_ok=True)
 
 
-def save_news_article(news_year, article_date, output_filename, article_content, news_headline, clearurl, image_urls, contact_cards):
-    """
-    Speichert einen News-Artikel als .docx-Datei.
-
-    Parameter:
-    - news_year (str): Das Jahr der News.
-    - article_date (str): Das Datum des Artikels.
-    - output_filename (str): Der Name der Ausgabedatei.
-    - article_content (list): Eine Liste mit dem Inhalt des Artikels.
-    - news_headline (str): Die Überschrift der News.
-    - clearurl (str): Die klare URL des Artikels.
-    - image_urls (list): Eine Liste mit den URLs der Bilder.
-    - contact_cards (dict): Ein Dictionary mit den Kontaktinformationen.
-
-    Rückgabewert:
-    - None
-    """
-    article_clear = HtmlToDocx()
+def save_docx(year: str,
+              article_date: date,
+              filename: str,
+              headline: str,
+              content_blocks: list,
+              article_url: str,
+              image_urls: list,
+              contact_cards: dict):
     doc = Document()
-    # level gibt die Überschriftsgröße bzw. Art an
-    doc.add_heading(news_headline, level=2)
-    for content in article_content:
-        content = str(content).replace('\xad', '').replace('|', '')
-        article_clear.add_html_to_document(content, doc)
-        paragraph_url_article = doc.add_paragraph("URL des Artikels: ")
-        add_hyperlink(paragraph_url_article, clearurl, clearurl)
-        if not image_urls:
-            doc.add_paragraph("Kein Bild vorhanden")
-        else:
-            for url in image_urls:
-                paragraph_picture = doc.add_paragraph("Url des Bildes: ")
-                add_hyperlink(paragraph_picture, url, url)
-        if not contact_cards:
-            doc.add_paragraph("Kein Kontakt vorhanden")
-        else:
-            for key, card in contact_cards.items():
-                doc.add_paragraph(f"Kontakt {key}:")
-                paragraph_contact_img = doc.add_paragraph("Bild-URL: ")
-                add_hyperlink(paragraph_contact_img,
-                              card['image_url'], card['image_url'])
-                doc.add_paragraph(f"Name des Kontakts: {card['link_text']}")
-                paragraph_contact_link = doc.add_paragraph("PM-Url: ")
-                add_hyperlink(paragraph_contact_link,
-                              card['link_url'], card['link_url'])
-    doc.save(f'{news_year}/{article_date}{output_filename}.docx')
+    doc.add_heading(headline, level=2)
+
+    converter = HtmlToDocx()
+    for block in content_blocks:
+        clean_html = str(block).replace('\xad', '').replace('|', '')
+        converter.add_html_to_document(clean_html, doc)
+
+    # URL
+    p = doc.add_paragraph('URL des Artikels: ')
+    add_hyperlink(p, article_url, article_url)
+
+    # Bilder
+    if image_urls:
+        for url in image_urls:
+            p = doc.add_paragraph('URL des Bildes: ')
+            add_hyperlink(p, url, url)
+    else:
+        doc.add_paragraph('Kein Bild vorhanden')
+
+    # Kontakte
+    if contact_cards:
+        for idx, card in contact_cards.items():
+            doc.add_paragraph(f'Kontakt {idx}:')
+            p = doc.add_paragraph('Bild-URL: ')
+            add_hyperlink(p, card['image_url'], card['image_url'])
+            doc.add_paragraph(f"Name des Kontakts: {card['link_text']}")
+            p = doc.add_paragraph('PM-URL: ')
+            add_hyperlink(p, card['link_url'], card['link_url'])
+    else:
+        doc.add_paragraph('Kein Kontakt vorhanden')
+
+    out_path = Path(year) / f"{article_date.isoformat()}_{filename}.docx"
+    doc.save(out_path)
+
+
+def fetch_soup(session: requests.Session, url: str):
+    resp = session.get(url)
+    resp.raise_for_status()
+    return BeautifulSoup(resp.content, 'html.parser')
+
+
+def parse_contacts(soup: BeautifulSoup) -> dict:
+    cards = {}
+    sections = soup.select('div.business-card.teaser.last')
+    for idx, sec in enumerate(sections):
+        img = sec.select_one('img')
+        link = sec.select_one('a')
+        if img and link:
+            cards[idx] = {
+                'image_url': BASE_URL + img['src'],
+                'link_text': link.text.strip(),
+                'link_url': BASE_URL + link['href']
+            }
+    return cards
+
+
+def parse_images(soup: BeautifulSoup) -> list:
+    urls = []
+    for a in soup.select('div.mediaelement-image a'):
+        href = a.get('href')
+        if href:
+            urls.append(f"{BASE_URL}/{href.strip()}" )
+    return urls
 
 
 def main():
-    """
-    Durchsucht die EIM-News-Liste nach Artikeln des eingegebenen Jahres und speichert die relevanten Informationen.
+    year_str = input('Aus welchem Jahr sollen die Berichte sein?\n').strip()
+    try:
+        year = int(year_str)
+    except ValueError:
+        print('Ungültiges Jahr!')
+        return
 
-    Die Funktion fragt den Benutzer nach einem Jahr und durchsucht dann die EIM-News-Liste nach Artikeln, die in diesem Jahr veröffentlicht wurden.
-    Die relevanten Informationen wie Datum, Überschrift, Artikeltext, Bilder und Kontaktinformationen werden extrahiert und in einer Datei gespeichert.
-    """
+    start, end = date(year, 1, 1), date(year, 12, 31)
+    ensure_directory(year_str)
 
-    page_number = 1
-    news_counter = 0
-    crawl_counter = True
+    session = requests.Session()
+    page = 1
+    count = 0
 
-    news_year = input("Aus welchem Jahr sollen die Berichte sein?\n")
-    begin_year = datetime.date(datetime(int(news_year), 1, 1))
-    end_year = datetime.date(datetime(int(news_year), 12, 31))
+    while True:
+        list_url = BASE_URL + NEWS_LIST_PATH.format(page)
+        soup = fetch_soup(session, list_url)
+        items = soup.select('div.news-list-item_body')
+        if not items:
+            break
 
-    create_directory_for_year(news_year)
+        for item in items:
+            span = item.select_one('span.news-list-item_date')
+            if not span:
+                continue
+            art_date = datetime.strptime(span.text.strip(), '%d.%m.%Y').date()
+            if not (start <= art_date <= end):
+                continue
 
-    while crawl_counter == True:
-        url = f'https://www.eim.uni-paderborn.de/eim-news-list/seite-{page_number}'
-        news_response = requests.get(url)
-        news_details = BeautifulSoup(news_response.content, 'html.parser')
-        news_items = news_details.find_all('div', class_='news-list-item_body')
-        for article in news_items:
-            date_span = article.find('span', class_='news-list-item_date')
-            if date_span is not None:
-                date = date_span.text.strip()
-                article_date = datetime.strptime(date, '%d.%m.%Y').date()
-                if begin_year <= article_date <= end_year:
-                    news_headline = article.find(
-                        'h3', class_='news-list-item_headline').text
-                    print(date, news_headline)
-                    news_counter += 1
-                    url_news = article.find('a')['href']
-                    output_filename = url_news.replace(
-                        '/', '_').replace('-single', '')
-                    news_response = requests.get(
-                        'https://www.eim.uni-paderborn.de' + url_news)
-                    clearurl = 'https://www.eim.uni-paderborn.de' + url_news
-                    news_result = BeautifulSoup(
-                        news_response.content, 'html.parser')
-                    news_article = news_result.find_all(
-                        'div', class_='news-detail_content')
-                    try:
-                        image_sections = news_result.find_all(
-                            'div', class_="mediaelement mediaelement-image")
-                        image_urls = []
-                        for section in image_sections:
-                            if section is not None:
-                                href_tags = section.find_all('a')
-                                for href_tag in href_tags:
-                                    if href_tag is not None:
-                                        print(href_tag['href'])
-                                        image_urls.append(
-                                            "https://www.eim.uni-paderborn.de/" + href_tag['href'])
-                        else:
-                            pass
-                    except AttributeError:
-                        print("Kein Bild vorhanden")
-                    try:
-                        contact_sections = news_result.find_all(
-                            'div', class_="business-card teaser last")
-                        contact_image_urls = []
-                        contact_link_texts = []
-                        contact_link_urls = []
-                        contact_cards = {}
-                        for section in contact_sections:
-                            if section is not None:
-                                image_tags = section.find_all('img')
-                                for image_tag in image_tags:
-                                    if image_tag is not None:
-                                        contact_image_urls.append(
-                                            "https://www.eim.uni-paderborn.de"+image_tag.get('src'))
-                                link_tags = section.find_all('a')
-                                for link_tag in link_tags:
-                                    if link_tag is not None:
-                                        contact_link_texts.append(
-                                            link_tag.text)
-                                        contact_link_urls.append(
-                                            link_tag.get('href'))
-                                for i in range(len(contact_image_urls)):
-                                    card = {
-                                        'image_url': contact_image_urls[i],
-                                        'link_text': contact_link_texts[i],
-                                        'link_url': contact_link_urls[i]
-                                    }
-                                    contact_cards[i] = card
-                        else:
-                            pass
-                    except:
-                        print("Keine Kontaktbox vorhanden")
+            headline_tag = item.select_one('h3.news-list-item_headline')
+            link_tag = item.select_one('a')
+            if not headline_tag or not link_tag:
+                continue
 
-                    if news_article is not None:
-                        save_news_article(news_year, article_date, output_filename, news_article,
-                                          news_headline, clearurl, image_urls, contact_cards)
-                    else:
-                        print('Kein Artikeltext vorhanden')
+            headline = headline_tag.text.strip()
+            href = link_tag['href']
+            slug = href.strip('/').replace('/', '_').replace('-single', '')
+            article_url = BASE_URL + href
 
-        page_number += 1
+            detail_soup = fetch_soup(session, article_url)
+            content = detail_soup.select('div.news-detail_content')
 
-        if begin_year >= article_date:
-            crawl_counter = False
-        if crawl_counter == False:
-            print('Anzahl der News: ', news_counter)
-            print('Crawl beendet')
+            image_urls = parse_images(detail_soup)
+            contact_cards = parse_contacts(detail_soup)
+
+            save_docx(year_str, art_date, slug, headline, content, article_url, image_urls, contact_cards)
+            print(f"Gespeichert: {art_date} - {headline}")
+            count += 1
+
+        page += 1
+
+    print(f'Anzahl der News: {count}')
+
 
 if __name__ == '__main__':
     main()
