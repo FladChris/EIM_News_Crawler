@@ -25,7 +25,7 @@ Der **EIM_News_Crawler** durchsucht automatisiert die News-Seite der Fakultät u
 
 - **Jahresfilter:** Extrahiert nur Artikel eines vom Benutzer eingegebenen Jahres.
 - **DOCX-Erstellung:** Konvertierung von HTML-Inhalten in DOCX mit Bildern und Kontaktinfos.
-- **Einfaches CLI-Interface:** Fragt über die Kommandozeile nach dem Zieljahr.
+- **Einfaches CLI-Interface:** Das Zieljahr wird als Argument uebergeben.
 - **Modularer Code:** Leicht erweiterbare Struktur durch Helper-Funktionen.
 
 ## Installation
@@ -57,13 +57,13 @@ Der **EIM_News_Crawler** durchsucht automatisiert die News-Seite der Fakultät u
 
 ## Verwendung
 
-1. **Skript ausführen:**  
+1. **Skript ausführen:**
    ```bash
-   python EIM_News_Crawler_docx.py
+   python -m eim_news_crawler 2024
    ```
 
-2. **Jahr eingeben:**  
-   Folge der Aufforderung und gib das gewünschte Jahr (z. B. `2024`) ein.
+2. **Parameter:**
+   Das Jahresargument bestimmt, aus welchem Jahr die News gespeichert werden.
 
 3. **Ergebnisse:**  
    Für das eingegebene Jahr wird ein Verzeichnis angelegt, und alle gefundenen Artikel werden darin als `YYYY-MM-DD_slug.docx` abgespeichert.
