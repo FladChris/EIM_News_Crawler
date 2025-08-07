@@ -1,89 +1,96 @@
+
 # EIM_News_Crawler
 
-Ein Webcrawler, der Nachrichtenartikel von der Website der Fakultät für Elektrotechnik, Informatik und Mathematik der Universität Paderborn extrahiert und jeden Artikel als separate DOCX-Datei speichert.
+A web crawler that extracts news articles from the website of the Faculty of Electrical Engineering, Computer Science and Mathematics at Paderborn University and saves each article as a separate DOCX file.
 
 [![Release](https://img.shields.io/github/v/release/FladChris/EIM_News_Crawler)](https://github.com/FladChris/EIM_News_Crawler/releases)  
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-## Inhaltsverzeichnis
+## Table of Contents
 
-- [EIM\_News\_Crawler](#eim_news_crawler)
-  - [Inhaltsverzeichnis](#inhaltsverzeichnis)
-  - [Überblick](#überblick)
+- [EIM_News_Crawler](#eim_news_crawler)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
   - [Features](#features)
   - [Installation](#installation)
-  - [Verwendung](#verwendung)
-  - [Abhängigkeiten](#abhängigkeiten)
-  - [Bekannte Probleme und Hinweise](#bekannte-probleme-und-hinweise)
-  - [Lizenz](#lizenz)
+  - [Usage](#usage)
+  - [Dependencies](#dependencies)
+  - [Known Issues and Notes](#known-issues-and-notes)
+  - [License](#license)
 
-## Überblick
+## Overview
 
-Der **EIM_News_Crawler** durchsucht automatisiert die News-Seite der Fakultät und speichert Artikel, die in einem benutzerdefinierten Jahr veröffentlicht wurden, als strukturierte DOCX-Dokumente.
+The **EIM_News_Crawler** automatically scans the faculty’s news page and saves articles published in a user-defined year as structured DOCX documents.
 
 ## Features
 
-- **Jahresfilter:** Extrahiert nur Artikel eines vom Benutzer eingegebenen Jahres.
-- **DOCX-Erstellung:** Konvertierung von HTML-Inhalten in DOCX mit Bildern und Kontaktinfos.
-- **Einfaches CLI-Interface:** Fragt über die Kommandozeile nach dem Zieljahr.
-- **Modularer Code:** Leicht erweiterbare Struktur durch Helper-Funktionen.
+- **Year filter:** Extracts only articles from a year specified by the user.
+- **DOCX creation:** Converts HTML content to DOCX, including images and contact information.
+- **Simple CLI interface:** Prompts for the target year via the command line.
+- **Modular code:** Easily extensible structure through helper functions.
 
 ## Installation
 
-1. **Repository klonen:**  
+1. **Clone the repository:**  
    ```bash
    git clone https://github.com/FladChris/EIM_News_Crawler.git
    cd EIM_News_Crawler
-   ```
+  
 
-2. **Virtuelle Umgebung (optional):**  
+2. **Virtual environment (optional):**
+
    ```bash
    python3 -m venv venv
    source venv/bin/activate  # Linux/macOS
-   venv\Scripts\activate   # Windows
-   ```
+   venv\Scripts\activate     # Windows
+   
 
-3. **Abhängigkeiten installieren:**  
-   Erstelle oder passe die `requirements.txt` an und installiere:
+3. **Install dependencies:**
+   Create or adjust `requirements.txt` and install:
+
    ```text
    requests==2.28.2
    beautifulsoup4==4.11.1
    python-docx==0.8.11
    htmldocx==0.1.7
    ```
+
    ```bash
    pip install -r requirements.txt
-   ```
+   
 
-## Verwendung
+## Usage
 
-1. **Skript ausführen:**  
+1. **Run the script:**
+
    ```bash
    python EIM_News_Crawler_docx.py
    ```
 
-2. **Jahr eingeben:**  
-   Folge der Aufforderung und gib das gewünschte Jahr (z. B. `2024`) ein.
+2. **Enter the year:**
+   Follow the prompt and enter the desired year (e.g., `2024`).
 
-3. **Ergebnisse:**  
-   Für das eingegebene Jahr wird ein Verzeichnis angelegt, und alle gefundenen Artikel werden darin als `YYYY-MM-DD_slug.docx` abgespeichert.
+3. **Results:**
+   A directory is created for the entered year, and all found articles are saved inside it as `YYYY-MM-DD_slug.docx`.
 
-## Abhängigkeiten
+## Dependencies
 
-Das Skript nutzt folgende externe Bibliotheken:
+The script uses the following external libraries:
 
-- `requests` (HTTP-Anfragen)
-- `beautifulsoup4` (HTML-Parsing)
-- `python-docx` (Erstellung von DOCX-Dateien)
-- `htmldocx` (Konvertierung HTML → DOCX)
+* `requests` (HTTP requests)
+* `beautifulsoup4` (HTML parsing)
+* `python-docx` (DOCX file creation)
+* `htmldocx` (HTML → DOCX conversion)
 
-## Bekannte Probleme und Hinweise
+## Known Issues and Notes
 
-- **Timeout & Netzwerkzugriff:**  
-  Außerhalb des Universitätsnetzwerks kann es zu Timeouts kommen. VPN-Zugriff auf das Uni-Netz kann helfen.
-- **Fehlende Inhalte:**  
-  Artikel ohne Text, Bilder oder Kontaktinfos werden entsprechend markiert.
+* **Timeout & network access:**
+  Accessing from outside the university network can lead to timeouts. Using a VPN connection to the university network may help.
+* **Missing content:**
+  Articles without text, images or contact information are flagged accordingly.
 
-## Lizenz
+## License
 
-Dieses Projekt ist unter der MIT-Lizenz lizenziert.
+This project is licensed under the MIT License.
+
+
